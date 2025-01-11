@@ -68,11 +68,6 @@ class DownloadThread(QThread):
 
     def run(self):
         try:
-            def on_complete(file_path):
-                self.completed.emit(file_path)
-
-            self.stream.on_complete = on_complete
-
             downloaded_file = self.stream.download(
                 output_path=self.output_path,
                 filename=self.filename,
@@ -128,7 +123,6 @@ class MainWindow(QMainWindow):
         streams_group = QGroupBox("Available Streams")
         streams_layout = QVBoxLayout(streams_group)
         
-        # Create and setup the tree widget
         self.streams_tree = QTreeWidget()
         self.streams_tree.setHeaderLabels([
             "Stream Type",
@@ -144,8 +138,6 @@ class MainWindow(QMainWindow):
             "Codecs"
         ])
 
-        
-        # Set column properties
         header = self.streams_tree.header()
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
         self.streams_tree.setAlternatingRowColors(True)
@@ -206,16 +198,13 @@ class MainWindow(QMainWindow):
             self.title_label.setText(title)
             self.setWindowTitle(f"YouTube Video Info - {title}")
         
-        # Clear the tree
         self.streams_tree.clear()
         
-        # Create parent items for different types
         video_parent = QTreeWidgetItem(["Video Streams"])
         audio_parent = QTreeWidgetItem(["Audio Streams"])
         self.streams_tree.addTopLevelItem(video_parent)
         self.streams_tree.addTopLevelItem(audio_parent)
         
-        # Populate the tree
         for stream in streams_objects:
             if stream.type == 'video':
                 parent = video_parent
@@ -233,16 +222,13 @@ class MainWindow(QMainWindow):
             item.setText(7, "Yes" if stream.is_adaptive else "No")
             item.setText(8, "Yes" if stream.is_progressive else "No")
 
-            # Extract Bitrate
             bitrate = stream.abr if stream.includes_audio_track else "N/A"
             item.setText(9, bitrate)
 
-            # Extract Codecs
             audio_codec, video_codec = stream.parse_codecs()
             codecs = f"Audio: {audio_codec or 'N/A'}, Video: {video_codec or 'N/A'}"
             item.setText(10, codecs)
 
-            # Add tooltip with all information
             tooltip = (
                 f"Itag: {stream.itag}\n"
                 f"Type: {stream.type}\n"
@@ -259,8 +245,6 @@ class MainWindow(QMainWindow):
             )
             item.setToolTip(0, tooltip)
 
-        
-        # Expand all items
         self.streams_tree.expandAll()
         
         self.captions_listbox.addItems(captions_info)
@@ -278,10 +262,8 @@ class MainWindow(QMainWindow):
             return
 
         selected_item = selected_items[0]
-        # Get the itag from the first column text
         itag = int(selected_item.text(0).split(": ")[1])
         
-        # Find the corresponding stream object
         selected_stream = next(
             (stream for stream in self.streams_objects if stream.itag == itag),
             None
@@ -324,17 +306,3 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
-
-"""
-Main Window
-└── Central Widget (QWidget)
-    └── Main Layout (QVBoxLayout)
-        ├── URL Frame (QFrame)
-        ├── OAuth Checkbox (QCheckBox)
-        ├── Error Label (QLabel)
-        ├── Title Label (QLabel)
-        ├── Info Layout (QVBoxLayout)
-        │   ├── Streams Group (QGroupBox) [Stretch: 4]
-        │   └── Captions Group (QGroupBox) [Stretch: 1]
-        └── Status Label (QLabel)
-"""
