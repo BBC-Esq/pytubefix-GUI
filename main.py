@@ -306,3 +306,17 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
+"""
+Main Window
+└── Central Widget (QWidget)
+    └── Main Layout (QVBoxLayout)
+        ├── URL Frame (QFrame)
+        ├── OAuth Checkbox (QCheckBox)
+        ├── Error Label (QLabel)
+        ├── Title Label (QLabel)
+        ├── Info Layout (QVBoxLayout)
+        │   ├── Streams Group (QGroupBox) [Stretch: 4]
+        │   └── Captions Group (QGroupBox) [Stretch: 1]
+        └── Status Label (QLabel)
+"""
